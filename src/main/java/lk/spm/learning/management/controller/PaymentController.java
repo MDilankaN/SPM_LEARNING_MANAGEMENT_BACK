@@ -32,16 +32,16 @@ public class PaymentController {
 
     //================ Add single Payment Details =======================
     @PostMapping("/addPayment")
-    public ResponseEntity<?> addPayment( @RequestBody Payment payment) {
+    public ResponseEntity<?> addPayment(@RequestBody Payment payment) {
         System.out.println("payment is " + payment);
-//        try {
-//            System.out.println("payment is " + payment);
-//            paymentRepository.save(payment);
-//            return new ResponseEntity<Payment>(payment, HttpStatus.OK);
-//        } catch (Exception e){
-//            e.printStackTrace();
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-//        }
-        return  new ResponseEntity<>("lol", HttpStatus.NOT_FOUND);
+        try {
+            System.out.println("payment is " + payment);
+            paymentRepository.save(payment);
+            return new ResponseEntity<Payment>(payment, HttpStatus.OK);
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        //return  new ResponseEntity<>("lol", HttpStatus.NOT_FOUND);
     }
 }

@@ -19,14 +19,23 @@ public class Course {
     @Column(name = "body")
     private String body;
 
+    @Column(name = "price")
+    private double price;
+
+    @Column(name = "status")
+    private String status;
+
     public Course() {
 
     }
 
-    public Course(String title, String description, String body) {
+    public Course(String title, String description, String body, double price, String status) {
         this.title = title;
         this.description = description;
         this.body = body;
+        this.price = price;
+        this.status = status;
+
     }
 
     public long getId() {
@@ -49,13 +58,28 @@ public class Course {
         this.description = description;
     }
 
-    public String isBody() {
+    public String getBody() {
         return body;
     }
 
-    public void setBody(String isPublished) {
+    public void setBody(String body) {
+        this.body = body;
+    }
 
-        this.body = isPublished;
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override

@@ -1,7 +1,6 @@
 package lk.spm.learning.management.controller;
 
 import lk.spm.learning.management.model.Course;
-import lk.spm.learning.management.model.User;
 import lk.spm.learning.management.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class CourseController {
@@ -61,7 +60,7 @@ public class CourseController {
             Course yetToUpdateEmployee = yetToUpdate.get();
             yetToUpdateEmployee.setTitle(updatedCourse.getTitle());
             yetToUpdateEmployee.setDescription(updatedCourse.getDescription());
-            yetToUpdateEmployee.setBody(updatedCourse.isBody());
+            yetToUpdateEmployee.setBody(updatedCourse.getBody());
 
             //SAVE THE UPDATED USER.
             courseRepository.save(yetToUpdateEmployee);
@@ -72,4 +71,13 @@ public class CourseController {
     }
 
     //DELETE COURSE.
+    @DeleteMapping("delete/course/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable("id") Long courseId ){
+        try {
+            courseRepository.deleteById(courseId);
+            return new ResponseEntity<String>("Item Deleted" + courseId, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 }

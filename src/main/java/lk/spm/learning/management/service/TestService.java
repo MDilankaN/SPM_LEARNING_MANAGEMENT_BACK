@@ -24,4 +24,6 @@ public class TestService {
             System.out.println("Read from DB: " + rs.getTimestamp("tick"));
         }
     }
+
+
 }
