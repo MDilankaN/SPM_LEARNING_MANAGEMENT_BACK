@@ -72,13 +72,11 @@ public class ClassController {
             return new ResponseEntity<>("Class doesn't exist", HttpStatus.NOT_FOUND);
         }
     }
-
+  
     //Delete class
     @DeleteMapping("/deleteclass/{id}")
     public ResponseEntity<?> deleteClass(@PathVariable("id") Long id){
         classRepository.deleteById(id);
         return new ResponseEntity<>("delete successful", HttpStatus.OK);
     }
-
-
 }

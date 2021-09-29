@@ -1,25 +1,21 @@
 package lk.spm.learning.management.controller;
-
 import lk.spm.learning.management.model.FileModel;
 import lk.spm.learning.management.service.FileStorageService;
-import org.apache.tomcat.util.http.fileupload.FileUpload;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.List;
 
-@Controller
+@CrossOrigin(origins = "*")
+@RestController
+@RequestMapping("/api")
 public class FileController {
 
     private final FileStorageService fileStorageService;
@@ -29,16 +25,20 @@ public class FileController {
     }
 
     @PostMapping("single/upload")
-    FileModel singleFileUpload(@RequestParam("file")MultipartFile file){
+    FileModel singleFileUpload(@RequestParam("file")MultipartFile file,
+                               @RequestParam("name")String name,
+                               @RequestParam("price")String price,
+                               @RequestParam("course")String course,
+                               @RequestParam("description")String description
+    ){
         String fileName = fileStorageService.storeFile(file);
         String url = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/download/")
                 .path(fileName)
                 .toUriString();
-
         String contentType = file.getContentType();
-        FileModel response = new FileModel(fileName, url, contentType);
-
+        fileStorageService.saveFilesToTheDatabase(fileName, url, contentType,price, description, course, name);
+        FileModel response = new FileModel(fileName, url, contentType,price, description, course, name);
         return response;
     }
 
@@ -57,5 +57,15 @@ public class FileController {
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + resource.getFilename())
                 .body(resource);
+    }
+
+    @GetMapping("/files")
+    ResponseEntity<?> getAllFiles(){
+        List<FileModel> files = fileStorageService.getAllFiles();
+        if(files.size() > 0){
+            return new ResponseEntity<>(files, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("No Files Available", HttpStatus.NOT_FOUND);
+        }
     }
 }

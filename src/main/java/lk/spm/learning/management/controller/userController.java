@@ -4,7 +4,9 @@ import lk.spm.learning.management.model.User;
 import lk.spm.learning.management.model.loginUser;
 import lk.spm.learning.management.repository.loginUserRepository;
 import lk.spm.learning.management.repository.userRepository;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -60,17 +62,18 @@ public class userController {
     }
 
 
-    @GetMapping("/teachercount")
+    @GetMapping("/usercount")
     public ResponseEntity<?> getTeacherCount(){
-        List<User> users = loginUserRepository.getTeacherList();
-        return new ResponseEntity<>(users.size(), HttpStatus.OK);
+        List<User> teachers = loginUserRepository.getTeacherList();
+        List<User> students = loginUserRepository.getStudentList();
+        List<User> user = loginUserRepository.getUserList();
+        ArrayList users = new ArrayList();
+        users.add(teachers.size());
+        users.add(students.size());
+        users.add(user.size());
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping("/studentcount")
-    public ResponseEntity<?> getStudentCount(){
-        List<User> users = loginUserRepository.getStudentList();
-        return new ResponseEntity<>(users.size(), HttpStatus.OK);
-    }
 
 
     //Add user
@@ -79,9 +82,12 @@ public class userController {
         try {
             System.out.println("user is " + user.getPassword());
             userRepository.save(user);
-            return new ResponseEntity<User>(user, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<User>(user, HttpStatus.OK);//
+        } catch (DataIntegrityViolationException e){
+            return new ResponseEntity<>("username exists", HttpStatus.OK);
+        }catch (Exception e){
+            System.out.println("si " + e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 
