@@ -94,12 +94,14 @@ public class userController {
     //Get User Method.
     @PostMapping("/validate")
     public ResponseEntity<?> validateUser (@RequestBody User user){
-        System.out.println("id " +loginUserRepository.getUserID(user));
-        System.out.println("all data " +userRepository.findById(Long.valueOf(loginUserRepository.getUserID(user))).get());
-        Optional<User> users = userRepository.findById(Long.valueOf(loginUserRepository.getUserID(user)));
+        Optional<User> users = null;
         try {
+            users = userRepository.findById(Long.valueOf(loginUserRepository.getUserID(user)));
             return new ResponseEntity<>(users.get() , HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (java.lang.NullPointerException e){
+            return new ResponseEntity<>(users.get(), HttpStatus.OK);
+        }
+        catch (Exception e) {
             return new ResponseEntity<>(e.getMessage() , HttpStatus.OK);
         }
     }

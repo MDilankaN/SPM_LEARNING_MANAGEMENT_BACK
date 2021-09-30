@@ -16,14 +16,18 @@ public class LectureVideos {
     @Column(name = "url")
     private String url;
 
+    @Column(name = "image")
+    private String image;
+
     public LectureVideos(){
 
     }
 
-    public LectureVideos(long id, String name, String url) {
+    public LectureVideos(long id, String name, String url, String image) {
         this.id = id;
         this.name = name;
         this.url = url;
+        this.image = image;
     }
 
     public long getId() {
@@ -48,5 +52,13 @@ public class LectureVideos {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
