@@ -1,11 +1,15 @@
 package lk.spm.learning.management.controller;
 import lk.spm.learning.management.model.Announcement;
+import lk.spm.learning.management.model.TutorCountData;
 import lk.spm.learning.management.repository.AnnouncementRepository;
+import lk.spm.learning.management.repository.Impl.UserImplementation;
+import lk.spm.learning.management.repository.loginUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
-
+import lk.spm.learning.management.model.AnnouncementCountData;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +20,12 @@ public class AnnouncementController {
 
     @Autowired
     AnnouncementRepository announcementRepository;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    UserImplementation userImplementation;
 
     //GET announcements
     @GetMapping("/announcements")
@@ -75,6 +85,17 @@ public class AnnouncementController {
     public ResponseEntity<?> deleteAnnouncement(@PathVariable("id") Long id){
         announcementRepository.deleteById(id);
         return new ResponseEntity<>("delete successful", HttpStatus.OK);
+    }
+
+    @GetMapping("/anncountbyclass")
+    public ResponseEntity<?> getAnnCountByClass(){
+        List<AnnouncementCountData> imageModels = userImplementation.getAnnListFromClasses();
+        try {
+            return new ResponseEntity<>(imageModels , HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage() , HttpStatus.OK);
+        }
+
     }
 
 

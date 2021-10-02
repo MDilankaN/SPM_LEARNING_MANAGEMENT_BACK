@@ -1,23 +1,26 @@
 package lk.spm.learning.management.repository.Impl;
-
+import lk.spm.learning.management.model.*;
+import lk.spm.learning.management.mappers.ClassTutorMapper;
 import lk.spm.learning.management.mappers.PersonMapper;
-import lk.spm.learning.management.model.User;
 import lk.spm.learning.management.repository.loginUserRepository;
-import lk.spm.learning.management.repository.userRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.security.Permission;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
-
-import static lk.spm.learning.management.repository.Impl.Query.USERS;
 
 @Repository
 public class UserImplementation implements loginUserRepository {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
     public String validateUser(User user) {
@@ -46,6 +49,58 @@ public class UserImplementation implements loginUserRepository {
         System.out.println(users);
         return users;
     }
+
+
+    @Override
+    public List<User> getValidTeacherList() {
+        String sql = "SELECT * FROM users WHERE type = 'teacher' and status = 'valid' order by id";
+        List<User> users = jdbcTemplate.query(sql, new PersonMapper());
+        System.out.println(users);
+        return users;
+    }
+
+    @Override
+    public List<User> getInvalidTeacherList() {
+        String sql = "SELECT * FROM users WHERE type = 'teacher' and status = 'invalid' order by id";
+        List<User> users = jdbcTemplate.query(sql, new PersonMapper());
+        System.out.println(users);
+        return users;
+    }
+
+    @Override
+    public List<User> getPendingTeacherList() {
+        String sql = "SELECT * FROM users WHERE type = 'teacher' and status = 'pending' order by id";
+        List<User> users = jdbcTemplate.query(sql, new PersonMapper());
+        System.out.println(users);
+        return users;
+    }
+
+    //get Tutor count
+    public List<TutorCountData> getTutorListFromClasses() {
+        String sql = "SELECT name,COUNT(tutor_name) AS tutorCount FROM images GROUP BY name";
+        return namedParameterJdbcTemplate.query(sql, (rs, i) -> permissionMapperNew(rs));
+    }
+
+    private TutorCountData permissionMapperNew(ResultSet rs) throws SQLException {
+       TutorCountData data = new TutorCountData();
+       data.setClassName(rs.getString("name"));
+       data.setCount(rs.getString("tutorCount"));
+        return data;
+    }
+
+    //get Announcement count
+    public List<AnnouncementCountData> getAnnListFromClasses() {
+        String sql = "SELECT name,COUNT(header) AS count FROM announcements GROUP BY name";
+        return namedParameterJdbcTemplate.query(sql, (rs, i) -> permissionMapperAnn(rs));
+    }
+
+    private AnnouncementCountData permissionMapperAnn(ResultSet rs) throws SQLException {
+        AnnouncementCountData data = new AnnouncementCountData();
+        data.setClassName(rs.getString("name"));
+        data.setCount(rs.getString("count"));
+        return data;
+    }
+
 
     @Override
     public List<User> getUserList() {
@@ -77,5 +132,25 @@ public class UserImplementation implements loginUserRepository {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     *
+     * Tutor functionality.
+     *
+     **/
+
+    public List<ChartData> getGraphData () {
+        String sql = "SELECT COUNT(DISTINCT id) AS count, course AS category\n" +
+                "FROM files\n" +
+                "GROUP BY course";
+           return namedParameterJdbcTemplate.query(sql, (rs, i) -> permissionMapper(rs));
+    }
+
+    private ChartData permissionMapper(ResultSet rs) throws SQLException {
+        ChartData data = new ChartData();
+        data.setCategory(rs.getString("category"));
+        data.setCount(rs.getString("count"));
+        return data;
     }
 }

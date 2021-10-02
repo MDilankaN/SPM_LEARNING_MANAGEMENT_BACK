@@ -1,12 +1,9 @@
 package lk.spm.learning.management.service;
-import lk.spm.learning.management.model.Class;
 import lk.spm.learning.management.model.FileModel;
 import lk.spm.learning.management.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,14 +22,12 @@ import java.util.Objects;
 public class FileStorageService {
     @Autowired
     private FileRepository fileRepository;
-
     private final Path fileStoragePath;
     private final String fileStorageLocation;
 
     public FileStorageService (@Value("${file.storage.location:temp}") String fileStorageLocation){
         this.fileStorageLocation = fileStorageLocation;
         fileStoragePath = Paths.get(fileStorageLocation).toAbsolutePath().normalize();
-
         try {
             Files.createDirectories(fileStoragePath);
         } catch (IOException e){
@@ -64,7 +59,6 @@ public class FileStorageService {
         } else {
             throw new RuntimeException("File not available");
         }
-
 
     }
 

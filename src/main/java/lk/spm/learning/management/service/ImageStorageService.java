@@ -69,8 +69,8 @@ public class ImageStorageService {
     }
 
     // Method to save the uploaded files in the database.
-    public ImageModel saveFilesToTheDatabase(String fileName) {
-        ImageModel imageModel = new ImageModel(fileName);
+    public ImageModel saveFilesToTheDatabase(String fileName, String name, String description, String tutorName) {
+        ImageModel imageModel = new ImageModel(name, description, tutorName,fileName);
         return imageRepository.save(imageModel);
     }
 

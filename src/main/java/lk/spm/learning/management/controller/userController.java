@@ -74,6 +74,18 @@ public class userController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    @GetMapping("/teachercount")
+    public ResponseEntity<?> getValidTeacherCount(){
+        List<User> valid = loginUserRepository.getValidTeacherList();
+        List<User> invalid = loginUserRepository.getInvalidTeacherList();
+        List<User> pending = loginUserRepository.getPendingTeacherList();
+        ArrayList users = new ArrayList();
+        users.add(valid.size());
+        users.add(invalid.size());
+        users.add(pending.size());
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
 
 
     //Add user
